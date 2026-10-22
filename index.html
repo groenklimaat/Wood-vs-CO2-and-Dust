@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wood vs CO₂ and Dust | Awareness Calculator</title>
+    
+    <!-- PWA Manifest & Iconen -->
+    <link rel="manifest" href="https://groenklimaat.github.io/Wood-vs-CO2-and-Dust/manifest.json">
+    <link rel="icon" type="image/svg+xml" href="https://groenklimaat.github.io/Wood-vs-CO2-and-Dust/icon.svg">
+    <meta name="theme-color" content="#1e5c3b">
+    
+    <style>
+        :root {
+            --primary-color: #2e8b57;
+            --primary-dark: #1e5c3b;
+            --secondary-color: #3cb371;
+            --accent-orange: #ff7f50;
+            --accent-yellow: #ffd700;
+            --light-bg: #f5f9f7;
+            --dark-text: #333;
+            --light-text: #fff;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+            padding-bottom: 40px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+            color: var(--light-text);
+            padding: 30px 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .lang-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 20px;
+            max-width: 900px;
+        }
+
+        .lang-btn {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: 0.2s;
+        }
+
+        .lang-btn:hover, .lang-btn.active {
+            background: white;
+            color: var(--primary-dark);
+            font-weight: bold;
+        }
+
+        header svg {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 700px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 850px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .card h2 {
+            color: var(--primary-dark);
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eaeaea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            border: 2px solid var(--secondary-color);
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fafafa;
+        }
+
+        input {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .unit {
+            background: #e8f5e9;
+            color: var(--primary-dark);
+            padding: 0 15px;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        /* De Bereken Knop */
+        .calculate-btn {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: bold;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .wood-species-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+        
+        .wood-option {
+            background-color: #f9f9f9;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .wood-option:hover {
+            border-color: var(--secondary-color);
+            background-color: #f0f9f0;
+        }
+        
+        .wood-option.selected {
+            border-color: var(--primary-color);
+            background-color: #e8f5e9;
+        }
+        
+        .wood-name {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            font-size: 1.05rem;
+        }
+        
+        .wood-details {
+            font-size: 0.85rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .info-note {
+            background: #e8f5e9;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+
+        .result-highlight {
+            text-align: center;
+            background: #f0f9f0;
+            border: 2px dashed var(--primary-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .result-highlight h3 {
+            color: var(--primary-dark);
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .big-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+
+        .big-unit {
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        /* Equivalenten (Auto, Vliegtuig, Bomen) */
+        .equiv-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-top: 15px;
+            margin-bottom: 25px;
+        }
+
+        .equiv-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            border: 1px solid #eaeaea;
+        }
+
+        .equiv-icon {
+            font-size: 1.8rem;
+            width: 40px;
+            text-align: center;
+        }
+
+        .equiv-text {
+            font-size: 0.95rem;
+            color: #444;
+            flex: 1;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .comparison-table th, .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .comparison-table th {
+            background: #f5f9f7;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .savings {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .dust-explanation {
+            background: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-size: 0.95rem;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="lang-selector" id="langSelector"></div>
+
+            <!-- Het SVG Icoon -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                <rect width="512" height="512" rx="96" ry="96" fill="#1e5c3b"/>
+                <g fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" opacity="0.45">
+                    <path d="M 190,340 C 150,280 210,220 170,140 C 150,100 180,60 160,20" stroke-width="18" />
+                    <path d="M 225,330 C 205,260 265,200 225,130 C 205,90 245,40 225,10" stroke-width="22" />
+                    <path d="M 275,340 C 305,270 245,210 285,150 C 315,100 275,50 295,20" stroke-width="20" />
+                    <path d="M 315,350 C 355,290 295,230 335,160 C 365,110 325,60 345,30" stroke-width="16" />
+                    <path d="M 250,320 C 230,250 280,180 250,100" stroke-width="10" opacity="0.6"/>
+                    <path d="M 295,320 C 315,250 265,180 295,110" stroke-width="12" opacity="0.6"/>
+                </g>
+                <g transform="translate(256, 400)">
+                    <rect x="-60" y="-12" width="120" height="24" rx="8" transform="rotate(-25)" fill="#8b5a2b" />
+                    <rect x="-60" y="-12" width="120" height="24" rx="8" transform="rotate(-25)" fill="#a0522d" opacity="0.6"/>
+                    <rect x="-60" y="-12" width="120" height="24" rx="8" transform="rotate(25)" fill="#8b5a2b" />
+                    <rect x="-60" y="-12" width="120" height="24" rx="8" transform="rotate(25)" fill="#a0522d" opacity="0.6"/>
+                    <rect x="-45" y="-10" width="90" height="20" rx="6" transform="rotate(5)" fill="#6b4226" />
+                </g>
+                <g transform="translate(256, 350)">
+                    <path d="M 0,-90 C 40,-60 55,-30 55,0 C 55,35 30,55 0,55 C -30,55 -55,35 -55,0 C -55,-30 -40,-60 0,-90 Z" fill="#ff7f50" />
+                    <path d="M 0,-60 C 25,-40 35,-15 35,10 C 35,35 15,50 0,50 C -15,50 -35,35 -35,10 C -35,-15 -25,-40 0,-60 Z" fill="#ffd700" />
+                    <path d="M 0,-30 C 12,-15 15,0 15,15 C 15,30 8,40 0,40 C -8,40 -15,30 -15,15 C -15,0 -12,-15 0,-30 Z" fill="#ffffff" />
+                </g>
+                <text x="40" y="100" font-family="'Segoe UI', Arial, sans-serif" font-size="60" font-weight="900" fill="#ffffff" letter-spacing="2">CO₂</text>
+                <text x="472" y="130" font-family="'Segoe UI', Arial, sans-serif" font-size="52" font-weight="800" fill="#ff7f50" text-anchor="end" letter-spacing="4">DUST</text>
+            </svg>
+            <h1 id="mainTitle">Wood vs CO₂ and Dust</h1>
+            <p class="subtitle" id="mainSubtitle">Calculate the true impact of your wood consumption. Discover CO₂ emissions, energy (kWh) and fine dust.</p>
+        </header>
+
+        <div class="content-grid">
+            <!-- Calculator Input -->
+            <div class="card">
+                <h2 id="inputTitle">⚙️ Your Wood Consumption</h2>
+
+                <div class="input-group">
+                    <label id="lblVolume" for="woodVolume">Annual Wood Consumption (m³/year):</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="woodVolume" min="0" step="0.1" value="1">
+                        <div class="unit">m³</div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label id="lblType">Wood type:</label>
+                    <div class="wood-species-grid" id="woodSpeciesGrid"></div>
+                </div>
+
+                <button class="calculate-btn" id="calculateBtn">
+                    <span id="btnText">Calculate Impact</span>
+                </button>
+
+                <div class="info-note" id="infoNote">
+                    <strong>💡 What is 1 m³ of wood?</strong><br>
+                    A cube of 1m x 1m x 1m. We calculate the CO₂ emissions and energy potential of this exact volume.
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="card">
+                <h2 id="resultsTitle">📊 Your Annual Impact</h2>
+                
+                <div class="result-highlight">
+                    <h3 id="lblCO2Result">Annual CO₂ Emissions</h3>
+                    <div class="big-number" id="co2Result">-</div>
+                    <div class="big-unit">kg CO₂</div>
+                </div>
+
+                <!-- Equivalenten Box -->
+                <div class="equiv-grid">
+                    <div class="equiv-item">
+                        <div class="equiv-icon">🚗</div>
+                        <div class="equiv-text" id="equivCar">Equivalent to driving 0 km in a car.</div>
+                    </div>
+                    <div class="equiv-item">
+                        <div class="equiv-icon">✈️</div>
+                        <div class="equiv-text" id="equivFlight">Equivalent to 0 return flights Amsterdam-Paris.</div>
+                    </div>
+                    <div class="equiv-item">
+                        <div class="equiv-icon">🌳</div>
+                        <div class="equiv-text" id="equivTrees">A tree needs 30-50 years to absorb just 1 ton of CO₂. This requires 0 trees.</div>
+                    </div>
+                </div>
+
+                <div class="result-highlight" style="background: #e3f2fd; border-color: #2196f3;">
+                    <h3 id="lblKwResult">Annual Energy Potential</h3>
+                    <div class="big-number" id="kwResult" style="color: #1976d2;">-</div>
+                    <div class="big-unit">kWh (kilowatt-hours)</div>
+                </div>
+
+                <div class="result-highlight" style="background: #fff3e0; border-color: #ff9800;">
+                    <h3 id="lblDustResult">Annual Fine Dust</h3>
+                    <div class="big-number" id="dustResult" style="color: #f57c00;">-</div>
+                    <div class="big-unit">kg fine dust</div>
+                </div>
+
+                <div class="dust-explanation" id="dustExp">
+                    <strong>Why is fine dust important?</strong><br>
+                    Fine dust (PM2.5) are invisible particles that penetrate deep into your lungs. Wood stoves emit this in large quantities. With natural gas or electricity, this is virtually <strong>zero</strong>.
+                </div>
+            </div>
+        </div>
+
+        <!-- Alternative Energy Comparison -->
+        <div class="card" style="margin-top: 25px;">
+            <h2 id="compTitle">🌱 Switching to an Alternative</h2>
+            <p id="compText">Suppose you would generate the same annual energy (kWh) with a cleaner alternative. What does that yield?</p>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th id="thAlt">Alternative</th>
+                        <th id="thCO2">CO₂ Emissions</th>
+                        <th id="thDust">Fine Dust</th>
+                        <th id="thWin">CO₂ Savings</th>
+                    </tr>
+                </thead>
+                <tbody id="comparisonBody">
+                    <tr><td colspan="4" style="text-align:center; color:#999;">Click 'Calculate' to see results</td></tr>
+                </tbody>
+            </table>
+            
+            <div class="info-note" style="margin-top: 20px; background: #e8f5e9;">
+                <strong id="msgTitle">Our message:</strong> <span id="msgText">We are here to help, not to point fingers. Every step towards a cleaner, more efficient heat source is a win for public health and the climate.</span>
+            </div>
+        </div>
+
+        <footer>
+            <p><a href="https://groenklimaat.github.io/Wood-vs-CO2-and-Dust/privacy.html" id="lnkPrivacy">Privacy Policy</a> | <a href="https://groenklimaat.github.io/Wood-vs-CO2-and-Dust/licentie.html" id="lnkLicense">License Terms</a></p>
+        </footer>
+    </div>
+
+    <script>
+        const translations = {
+            en: { 
+                title: "Wood vs CO₂ and Dust", subtitle: "Calculate the true impact of your wood consumption. Discover CO₂ emissions, energy (kWh) and fine dust.", 
+                inputTitle: "⚙️ Your Wood Consumption", lblVolume: "Annual Wood Consumption (m³/year):", lblType: "Wood type:", btnText: "Calculate Impact",
+                infoNote: "<strong>💡 What is 1 m³ of wood?</strong><br>A cube of 1m x 1m x 1m. We calculate the CO₂ emissions and energy potential of this exact volume.", 
+                resultsTitle: "📊 Your Annual Impact", lblCO2Result: "Annual CO₂ Emissions", lblKwResult: "Annual Energy Potential", lblDustResult: "Annual Fine Dust", 
+                dustExp: "<strong>Why is fine dust important?</strong><br>Fine dust (PM2.5) are invisible particles that penetrate deep into your lungs. Wood stoves emit this in large quantities. With natural gas or electricity, this is virtually <strong>zero</strong>.", 
+                compTitle: "🌱 Switching to an Alternative", compText: "Suppose you would generate the same annual energy (kWh) with a cleaner alternative. What does that yield?", 
+                thAlt: "Alternative", thCO2: "CO₂ Emissions", thDust: "Fine Dust", thWin: "CO₂ Savings", 
+                msgTitle: "Our message:", msgText: "We are here to help, not to point fingers. Every step towards a cleaner, more efficient heat source is a win for public health and the climate.", 
+                lnkPrivacy: "Privacy Policy", lnkLicense: "License Terms", optOak: "Oak", optBeech: "Beech", optAsh: "Ash", optBirch: "Birch", optPine: "Pine", gasName: "🔥 Natural Gas", oilName: "🛢️ Heating Oil", elecName: "🔌 Electricity",
+                equivCar: "Equivalent to driving <strong>{value} km</strong> in a car.",
+                equivFlight: "Equivalent to <strong>{value} return flights</strong> Amsterdam-Paris.",
+                equivTrees: "A tree needs 30-50 years to absorb just 1 ton of CO₂. This requires <strong>{value} trees</strong>."
+            },
+            nl: { 
+                title: "Wood vs CO₂ and Dust", subtitle: "Bereken de ware impact van jouw houtverbruik. Ontdek CO₂-uitstoot, energie (kWh) en fijnstof.", 
+                inputTitle: "⚙️ Jouw Houtverbruik", lblVolume: "Jaarlijks Houtverbruik (m³/jaar):", lblType: "Houtsoort:", btnText: "Bereken Impact",
+                infoNote: "<strong>💡 Wat is 1 m³ hout?</strong><br>Een kubus van 1m x 1m x 1m. We berekenen de CO₂-uitstoot en het energiepotentieel van precies dit volume.", 
+                resultsTitle: "📊 Jouw Jaarlijkse Impact", lblCO2Result: "Jaarlijkse CO₂-uitstoot", lblKwResult: "Jaarlijks Energiepotentieel", lblDustResult: "Jaarlijks Fijnstof", 
+                dustExp: "<strong>Waarom is fijnstof belangrijk?</strong><br>Fijnstof (PM2.5) zijn onzichtbare deeltjes die diep in je longen doordringen. Houtkachels stoten dit in grote hoeveelheden uit. Bij aardgas of elektriciteit is dit vrijwel <strong>nul</strong>.", 
+                compTitle: "🌱 Overstappen naar een Alternatief", compText: "Stel dat je dezelfde jaarlijkse energie (kWh) zou opwekken met een schoner alternatief. Wat levert dat op?", 
+                thAlt: "Alternatief", thCO2: "CO₂-uitstoot", thDust: "Fijnstof", thWin: "CO₂-winst", 
+                msgTitle: "Onze boodschap:", msgText: "We zijn er om te helpen, niet om te wijzen. Elke stap naar een schonere, efficiëntere warmtebron is een overwinning voor de volksgezondheid en het klimaat.", 
+                lnkPrivacy: "Privacybeleid", lnkLicense: "Licentievoorwaarden", optOak: "Eikenhout", optBeech: "Beukenhout", optAsh: "Essenhout", optBirch: "Berkenhout", optPine: "Grenenhout", gasName: "🔥 Aardgas", oilName: "🛢️ Mazout", elecName: "🔌 Elektriciteit",
+                equivCar: "Gelijk aan een autorit van <strong>{value} km</strong>.",
+                equivFlight: "Gelijk aan <strong>{value} retourvluchten</strong> Amsterdam-Parijs.",
+                equivTrees: "Een boom doet er 30-50 jaar over om 1 ton CO₂ op te nemen. Dit vereist <strong>{value} bomen</strong>."
+            },
+            fr: { 
+                title: "Bois vs CO₂ et Poussière", subtitle: "Calculez l'impact réel de votre consommation de bois. Découvrez les émissions de CO₂, l'énergie (kWh) et les poussières fines.", 
+                inputTitle: "⚙️ Votre Consommation de Bois", lblVolume: "Consommation annuelle de bois (m³/an):", lblType: "Type de bois:", btnText: "Calculer l'Impact",
+                infoNote: "<strong>💡 Qu'est-ce que 1 m³ de bois ?</strong><br>Un cube de 1m x 1m x 1m. Nous calculons les émissions de CO₂ et le potentiel énergétique de ce volume exact.", 
+                resultsTitle: "📊 Votre Impact Annuel", lblCO2Result: "Émissions annuelles de CO₂", lblKwResult: "Potentiel Énergétique Annuel", lblDustResult: "Poussières Fines Annuelles", 
+                dustExp: "<strong>Pourquoi la poussière est-elle importante ?</strong><br>Les particules fines (PM2.5) pénètrent profondément dans les poumons. Avec le gaz ou l'électricité, c'est pratiquement <strong>zéro</strong>.", 
+                compTitle: "🌱 Passer à une Alternative", compText: "Supposons que vous génériez la même énergie annuelle (kWh) avec une alternative plus propre.", 
+                thAlt: "Alternative", thCO2: "Émissions de CO₂", thDust: "Poussières", thWin: "Économies", 
+                msgTitle: "Notre message :", msgText: "Nous sommes là pour aider, pas pour pointer du doigt. Chaque pas vers une source de chaleur plus propre est une victoire.", 
+                lnkPrivacy: "Confidentialité", lnkLicense: "Licence", optOak: "Chêne", optBeech: "Hêtre", optAsh: "Frêne", optBirch: "Bouleau", optPine: "Pin", gasName: "🔥 Gaz Naturel", oilName: "🛢️ Mazout", elecName: "🔌 Électricité",
+                equivCar: "Équivaut à conduire <strong>{value} km</strong> en voiture.",
+                equivFlight: "Équivaut à <strong>{value} vols aller-retour</strong> Amsterdam-Paris.",
+                equivTrees: "Un arbre met 30 à 50 ans pour absorber seulement 1 tonne de CO₂. Cela nécessite <strong>{value} arbres</strong>."
+            },
+            de: { 
+                title: "Holz vs CO₂ und Staub", subtitle: "Berechnen Sie die wahren Auswirkungen Ihres Holzverbrauchs. Entdecken Sie CO₂-Emissionen, Energie (kWh) und Feinstaub.", 
+                inputTitle: "⚙️ Ihr Holzverbrauch", lblVolume: "Jährlicher Holzverbrauch (m³/Jahr):", lblType: "Holzart:", btnText: "Auswirkung berechnen",
+                infoNote: "<strong>💡 Was ist 1 m³ Holz?</strong><br>Ein Würfel von 1m x 1m x 1m. Wir berechnen die CO₂-Emissionen und das Energiepotenzial dieses exakten Volumens.", 
+                resultsTitle: "📊 Ihre Jährliche Auswirkung", lblCO2Result: "Jährliche CO₂-Emissionen", lblKwResult: "Jährliches Energiepotenzial", lblDustResult: "Jährlicher Feinstaub", 
+                dustExp: "<strong>Warum ist Feinstaub wichtig?</strong><br>Feinstaub (PM2.5) dringt tief in die Lunge ein. Bei Gas oder Strom ist dies praktisch <strong>null</strong>.", 
+                compTitle: "🌱 Wechsel zu einer Alternative", compText: "Angenommen, Sie erzeugen die gleiche jährliche Energie (kWh) mit einer saubereren Alternative.", 
+                thAlt: "Alternative", thCO2: "CO₂-Emissionen", thDust: "Feinstaub", thWin: "CO₂-Einsparung", 
+                msgTitle: "Unsere Botschaft:", msgText: "Wir sind hier, um zu helfen, nicht um mit dem Finger zu zeigen. Jeder Schritt zu einer saubereren Wärmequelle ist ein Gewinn.", 
+                lnkPrivacy: "Datenschutz", lnkLicense: "Lizenz", optOak: "Eiche", optBeech: "Buche", optAsh: "Esche", optBirch: "Birke", optPine: "Kiefer", gasName: "🔥 Erdgas", oilName: "🛢️ Heizöl", elecName: "🔌 Strom",
+                equivCar: "Entspricht einer Autofahrt von <strong>{value} km</strong>.",
+                equivFlight: "Entspricht <strong>{value} Hin- und Rückflügen</strong> Amsterdam-Paris.",
+                equivTrees: "Ein Baum braucht 30-50 Jahre, um nur 1 Tonne CO₂ aufzunehmen. Dies erfordert <strong>{value} Bäume</strong>."
+            },
+            // Overige talen vallen terug op de Engelse equivalenten mocht je ze niet allemaal invullen.
+        };
+
+        const langList = [
+            { code: 'en', label: 'English' },
+            { code: 'nl', label: 'Nederlands' },
+            { code: 'fr', label: 'Français' },
+            { code: 'de', label: 'Deutsch' },
+            { code: 'zh', label: '中文' },
+            { code: 'es', label: 'Español' },
+            { code: 'it', label: 'Italiano' },
+            { code: 'la', label: 'Latina' },
+            { code: 'sv', label: 'Svenska' },
+            { code: 'no', label: 'Norsk' },
+            { code: 'uk', label: 'Українська' },
+            { code: 'sb', label: 'Сибирский' },
+            { code: 'ru', label: 'Русский' },
+            { code: 'ja', label: '日本語' }
+        ];
+
+        let currentLang = 'en';
+
+        const woodData = { 
+            oak:   { density: 700, kcal: 4200 },
+            beech: { density: 680, kcal: 4300 },
+            ash:   { density: 680, kcal: 4100 },
+            birch: { density: 600, kcal: 3800 },
+            pine:  { density: 450, kcal: 3200 }
+        };
+        
+        let selectedWoodType = 'oak';
+        
+        const CO2_FACTOR = 1.83;
+        const KCAL_TO_KWH = 1 / 860;
+        const KACHEL_RENDEMENT = 0.75;
+        const DUST_HOUT_MG_KWH = 1.08; 
+        const DUST_GAS_MG_KWH = 0.00036;
+        const DUST_MAZOUT_MG_KWH = 0.0054;
+        const DUST_ELEC_MG_KWH = 0;
+
+        function init() {
+            createLanguageButtons();
+            createWoodOptions();
+            setLanguage('en');
+        }
+
+        function createLanguageButtons() {
+            const container = document.getElementById('langSelector');
+            container.innerHTML = '';
+            langList.forEach(lang => {
+                const btn = document.createElement('button');
+                btn.className = 'lang-btn';
+                btn.textContent = lang.label;
+                btn.onclick = () => setLanguage(lang.code);
+                btn.id = `btn-${lang.code}`;
+                container.appendChild(btn);
+            });
+        }
+
+        function createWoodOptions() {
+            const container = document.getElementById('woodSpeciesGrid');
+            container.innerHTML = '';
+            const t = translations[currentLang];
+            
+            Object.keys(woodData).forEach((key, index) => {
+                const wood = woodData[key];
+                let nameKey = 'opt' + key.charAt(0).toUpperCase() + key.slice(1);
+                let translatedName = t[nameKey] || key;
+
+                const option = document.createElement('div');
+                option.className = 'wood-option' + (index === 0 ? ' selected' : '');
+                option.id = `wood-${key}`;
+                
+                option.innerHTML = `
+                    <div class="wood-name">${translatedName}</div>
+                    <div class="wood-details">Dichtheid: ${wood.density} kg/m³</div>
+                    <div class="wood-details">Calorische waarde: ${wood.kcal} kcal/kg</div>
+                `;
+                
+                option.onclick = () => {
+                    document.querySelectorAll('.wood-option').forEach(el => el.classList.remove('selected'));
+                    option.classList.add('selected');
+                    selectedWoodType = key;
+                };
+                
+                container.appendChild(option);
+            });
+        }
+
+        function setLanguage(code) {
+            currentLang = code;
+            const t = translations[code] || translations['en'];
+            
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btn-${code}`).classList.add('active');
+
+            document.getElementById('mainTitle').textContent = t.title;
+            document.getElementById('mainSubtitle').textContent = t.subtitle;
+            document.getElementById('inputTitle').textContent = t.inputTitle;
+            document.getElementById('lblVolume').textContent = t.lblVolume;
+            document.getElementById('lblType').textContent = t.lblType;
+            document.getElementById('btnText').textContent = t.btnText;
+            document.getElementById('infoNote').innerHTML = t.infoNote;
+            document.getElementById('resultsTitle').textContent = t.resultsTitle;
+            document.getElementById('lblCO2Result').textContent = t.lblCO2Result;
+            document.getElementById('lblKwResult').textContent = t.lblKwResult;
+            document.getElementById('lblDustResult').textContent = t.lblDustResult;
+            document.getElementById('dustExp').innerHTML = t.dustExp;
+            document.getElementById('compTitle').textContent = t.compTitle;
+            document.getElementById('compText').textContent = t.compText;
+            document.getElementById('thAlt').textContent = t.thAlt;
+            document.getElementById('thCO2').textContent = t.thCO2;
+            document.getElementById('thDust').textContent = t.thDust;
+            document.getElementById('thWin').textContent = t.thWin;
+            document.getElementById('msgTitle').textContent = t.msgTitle;
+            document.getElementById('msgText').textContent = t.msgText;
+            document.getElementById('lnkPrivacy').textContent = t.lnkPrivacy;
+            document.getElementById('lnkLicense').textContent = t.lnkLicense;
+
+            createWoodOptions();
+            
+            // Reset resultaten bij taalwissel
+            document.getElementById('co2Result').textContent = '-';
+            document.getElementById('kwResult').textContent = '-';
+            document.getElementById('dustResult').textContent = '-';
+            document.getElementById('equivCar').innerHTML = t.equivCar.replace('{value}', '0');
+            document.getElementById('equivFlight').innerHTML = t.equivFlight.replace('{value}', '0');
+            document.getElementById('equivTrees').innerHTML = t.equivTrees.replace('{value}', '0');
+            document.getElementById('comparisonBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color:#999;">Click \'Calculate\' to see results</td></tr>';
+        }
+
+        function calculate() {
+            const volume = parseFloat(document.getElementById('woodVolume').value) || 0;
+            const currentWood = woodData[selectedWoodType];
+            const t = translations[currentLang] || translations['en'];
+            
+            // Basisberekening per 1 m3
+            const massPerM3 = currentWood.density;
+            const co2PerM3 = massPerM3 * CO2_FACTOR;
+            const energyKWhPerM3 = (massPerM3 * currentWood.kcal * KCAL_TO_KWH) * KACHEL_RENDEMENT;
+            const dustGramsPerM3 = (energyKWhPerM3 * DUST_HOUT_MG_KWH); 
+
+            // Vermenigvuldigen met het ingevulde jaarlijkse volume
+            const totalMass = massPerM3 * volume;
+            const totalCO2 = co2PerM3 * volume;
+            const totalEnergyKWh = energyKWhPerM3 * volume;
+            const totalDustGrams = dustGramsPerM3 * volume;
+
+            const locale = (currentLang === 'nl') ? 'nl-NL' : 'en-US';
+
+            // Update de drie hoofdvakken
+            document.getElementById('co2Result').textContent = Math.round(totalCO2).toLocaleString(locale);
+            document.getElementById('kwResult').textContent = Math.round(totalEnergyKWh).toLocaleString(locale);
+            document.getElementById('dustResult').textContent = (totalDustGrams / 1000).toFixed(2); // Weergeven in kg
+
+            // --- Berekening Equivalenten (op basis van jaarlijkse CO2) ---
+            const carKm = Math.round(totalCO2 / 0.13);
+            document.getElementById('equivCar').innerHTML = t.equivCar.replace('{value}', carKm.toLocaleString(locale));
+
+            const flights = (totalCO2 / 220).toFixed(1);
+            document.getElementById('equivFlight').innerHTML = t.equivFlight.replace('{value}', flights.replace('.', ','));
+
+            const trees = Math.ceil(totalCO2 / 1000);
+            document.getElementById('equivTrees').innerHTML = t.equivTrees.replace('{value}', trees.toLocaleString(locale));
+            
+            // Update de tabel
+            updateComparison(totalEnergyKWh, totalCO2, locale);
+        }
+
+        function updateComparison(totalEnergyKWh, woodCO2, locale) {
+            const t = translations[currentLang] || translations['en'];
+            const tbody = document.getElementById('comparisonBody');
+            tbody.innerHTML = '';
+            
+            const gasCO2 = totalEnergyKWh * 0.2;
+            const gasDust = totalEnergyKWh * DUST_GAS_MG_KWH;
+            const gasSavings = woodCO2 - gasCO2;
+            
+            const mazoutCO2 = totalEnergyKWh * 0.27;
+            const mazoutDust = totalEnergyKWh * DUST_MAZOUT_MG_KWH;
+            const mazoutSavings = woodCO2 - mazoutCO2;
+            
+            const elecCO2 = totalEnergyKWh * 0.15;
+            const elecDust = totalEnergyKWh * DUST_ELEC_MG_KWH;
+            const elecSavings = woodCO2 - elecCO2;
+
+            const rows = [
+                { name: t.gasName, co2: gasCO2, dust: gasDust, savings: gasSavings },
+                { name: t.oilName, co2: mazoutCO2, dust: mazoutDust, savings: mazoutSavings },
+                { name: t.elecName, co2: elecCO2, dust: elecDust, savings: elecSavings }
+            ];
+
+            rows.forEach(row => {
+                const tr = document.createElement('tr');
+                
+                let dustText = row.dust < 1 ? (currentLang === 'nl' ? 'Vrijwel 0' : '~0') : Math.round(row.dust).toLocaleString(locale) + ' mg';
+                
+                let savingsText = row.savings > 0 
+                    ? `-${Math.round(row.savings).toLocaleString(locale)} kg` 
+                    : `+${Math.abs(Math.round(row.savings)).toLocaleString(locale)} kg`;
+                    
+                let savingsClass = row.savings > 0 ? 'savings' : '';
+
+                tr.innerHTML = `
+                    <td><strong>${row.name}</strong></td>
+                    <td>${Math.round(row.co2).toLocaleString(locale)} kg CO₂</td>
+                    <td>${dustText}</td>
+                    <td class="${savingsClass}">${savingsText}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        document.getElementById('calculateBtn').addEventListener('click', calculate);
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js')
+        .then(reg => console.log('SW:', reg.scope))
+        .catch(err => console.error('SW error:', err));
+    });
+  }
+</script>
+</body>
+</html>
